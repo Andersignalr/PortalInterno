@@ -1,0 +1,29 @@
+﻿@model Noticia
+
+<h2>@(Model.Id == 0 ? "Nova Notícia" : "Editar Notícia")</h2>
+
+<form asp-action="Criar" method="post">
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Titulo"></label>
+        <input asp-for="Titulo" class="form-control" />
+        <span asp-validation-for="Titulo" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Conteudo"></label>
+        <textarea asp-for="Conteudo" rows="6" class="form-control"></textarea>
+        <span asp-validation-for="Conteudo" class="text-danger"></span>
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="Publicada" class="form-check-input" />
+        <label asp-for="Publicada" class="form-check-label">Publicada</label>
+    </div>
+
+    <button type="submit" class="btn btn-success">Salvar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

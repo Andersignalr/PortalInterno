@@ -1,0 +1,13 @@
+﻿@model Noticia
+
+<h2>@Model.Titulo</h2>
+
+<p class="text-muted">
+    Publicado em @Model.DataPublicacao.ToLocalTime() por @Model.Autor?.UserName
+</p>
+
+<hr />
+
+<p>@Model.Conteudo</p>
+
+<a asp-action="Index">Voltar</a>

@@ -1,0 +1,56 @@
+﻿@model FeedNoticiasViewModel
+
+@if (Model.Noticias.Any())
+{
+    var destaque = Model.Noticias.First();
+
+    <div class="card mb-4 border-primary">
+        <div class="card-body">
+            <h2 class="card-title">@destaque.Titulo</h2>
+            <p class="text-muted">
+                @destaque.DataPublicacao.ToLocalTime() • @destaque.Autor?.Email
+            </p>
+            <p>@destaque.Conteudo.Substring(0, Math.Min(300, destaque.Conteudo.Length))...</p>
+            <a asp-controller="Noticias"
+               asp-action="Detalhes"
+               asp-route-id="@destaque.Id"
+               class="btn btn-primary">
+                Ler mais
+            </a>
+        </div>
+    </div>
+
+    <h4>Mais notícias</h4>
+}
+
+@foreach (var item in Model.Noticias.Skip(1))
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5>@item.Titulo</h5>
+            <p class="text-muted">
+                @item.DataPublicacao.ToLocalTime() • @item.Autor?.Email
+            </p>
+            <p>@item.Conteudo.Substring(0, Math.Min(150, item.Conteudo.Length))...</p>
+            <a asp-controller="Noticias"
+               asp-action="Detalhes"
+               asp-route-id="@item.Id">
+                Ler mais
+            </a>
+        </div>
+    </div>
+}
+
+@if (Model.TotalPaginas > 1)
+{
+    <nav>
+        <ul class="pagination">
+            @for (int i = 1; i <= Model.TotalPaginas; i++)
+            {
+                <li class="page-item @(i == Model.PaginaAtual ? "active" : "")">
+                    <a class="page-link" asp-route-page="@i">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
