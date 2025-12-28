@@ -17,6 +17,8 @@
             <a class="navbar-brand" asp-controller="Home" asp-action="Index">
                 Portal Interno
             </a>
+            Olá, @User.Identity!.Name
+            
 
             <!-- Botão mobile -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarPrincipal">
@@ -39,6 +41,15 @@
                             Notícias
                         </a>
                     </li>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Admin" asp-action="Dashboard">
+                                Dashboard
+                            </a>
+                        </li>
+                    }
+
 
                     @if (User.IsInRole("Admin") || User.IsInRole("Editor"))
                     {

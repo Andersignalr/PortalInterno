@@ -29,11 +29,11 @@ public static class SeedData
             admin = new ApplicationUser
             {
                 UserName = "admin",
-                Email = "admin@site.com",
+                Email = email,
                 EmailConfirmed = true
             };
 
-            await userManager.CreateAsync(admin, "Senha@123");
+            await userManager.CreateAsync(admin, "Admin@123");
         }
 
         // 🔥 ISSO TEM QUE FICAR FORA DO IF

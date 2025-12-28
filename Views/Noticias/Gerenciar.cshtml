@@ -18,7 +18,10 @@
                 <td>@item.Titulo</td>
                 <td>@item.Autor?.UserName</td>
                 <td>
-                    @(item.Publicada ? "Publicada" : "Rascunho")
+                    <span class="badge @(item.Publicada ? "bg-success" : "bg-secondary")">
+                        @(item.Publicada ? "Publicada" : "Rascunho")
+                    </span>
+
                 </td>
                 <td>
                     <a asp-action="Editar" asp-route-id="@item.Id">Editar</a>

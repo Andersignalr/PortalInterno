@@ -18,7 +18,12 @@
                 @item.DataPublicacao.ToLocalTime() • @item.Autor?.UserName
             </p>
 
-            <p>@item.Conteudo.Substring(0, Math.Min(200, item.Conteudo.Length))...</p>
+            <p>
+                @(item.Conteudo.Length > 200
+                            ? item.Conteudo[..200] + "..."
+                            : item.Conteudo)
+            </p>
+
 
             <a asp-action="Detalhes" asp-route-id="@item.Id">Ler mais</a>
 
