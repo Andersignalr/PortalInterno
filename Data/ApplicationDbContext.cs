@@ -9,5 +9,9 @@ public class ApplicationDbContext
         : base(options) { }
 
     public DbSet<Noticia> Noticias { get; set; }
+    public DbSet<Tarefa> Tarefas { get; set; }
+
+    public DbSet<Projeto> Projetos { get; set; }
+
 }
 

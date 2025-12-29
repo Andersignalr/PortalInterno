@@ -1,0 +1,32 @@
+﻿@model Tarefa
+
+<h2>Nova tarefa</h2>
+
+<form method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label asp-for="Titulo"></label>
+        <input asp-for="Titulo" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Descricao"></label>
+        <textarea asp-for="Descricao" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Prioridade"></label>
+        <select asp-for="Prioridade"
+                asp-items="Html.GetEnumSelectList<PrioridadeTarefa>()"
+                class="form-select"></select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Prazo"></label>
+        <input asp-for="Prazo" type="date" class="form-control" />
+    </div>
+
+    <button class="btn btn-success">Salvar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

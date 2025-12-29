@@ -1,0 +1,51 @@
+"Dashboard" : Números e aumentos com cores positivo ou negativo.
+	- simbolo subindo verde + ou descendo vermelho -
+	- icones representativos
+	- Cards
+
+"Tarefas recentes": últimas tarefas (se tiver 200 não vai mostrar 200 né kkk)
+	- colocar cores de prioridade ou algo do tipo (vermelho, azul, cinza)
+	- Prazo
+	- ao adentrar, dar opções de finalizado ou excluir.
+
+"Projetos em andamento"
+	- Projetos terão titulo, porcentagem realizada (tarefas feitas), membros.
+	
+"Ações rápidas"
+	- Acões mais comuns com botões grandes e representativos (coloridos).
+
+
+"Upload de documentos"
+	- area de ftp.
+
+"Perfil"
+	- Foto, Nome, cargo principal.
+	
+	
+"Atividades recentes"
+	- Ex: "João Santos enviou um documento: 'Relatório Q4 2024' há 5 minutos."
+	
+"Comunicados"
+	- Titulo, data, setor / área, breve descrição, ler mais.
+
+"Proximos eventos"
+
+"Aba lateral"
+
+"Busca geral"
+
+"Notificações"
+
+"Equipe"
+
+"Calendário"
+
+"Documentos"
+
+"Projetos"
+
+"Configurações"
+
+"Mensagens diretas"
+
+"Chat"

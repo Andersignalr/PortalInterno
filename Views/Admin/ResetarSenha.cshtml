@@ -1,0 +1,25 @@
+﻿@model ApplicationUser
+
+<h2>Resetar senha</h2>
+
+<form method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label>Usuário</label>
+        <input class="form-control" value="@Model.Email" disabled />
+    </div>
+
+    <div class="mb-3">
+        <label>Nova senha</label>
+        <input type="password" name="novaSenha" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-danger">
+        Resetar senha
+    </button>
+
+    <a asp-action="Usuarios" class="btn btn-secondary">
+        Cancelar
+    </a>
+</form>

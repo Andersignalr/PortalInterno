@@ -1,0 +1,52 @@
+﻿@model IEnumerable<Tarefa>
+
+<h2>Tarefas</h2>
+
+<a asp-action="Criar" class="btn btn-success mb-3">
+    Nova tarefa
+</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Título</th>
+            <th>Prioridade</th>
+            <th>Prazo</th>
+            <th>Status</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var t in Model)
+        {
+            string badge = t.Prioridade switch
+            {
+                PrioridadeTarefa.Alta => "bg-danger",
+                PrioridadeTarefa.Media => "bg-primary",
+                _ => "bg-secondary"
+            };
+
+            <tr class="@(t.Finalizada ? "text-muted" : "")">
+                <td>@t.Titulo</td>
+                <td><span class="badge @badge">@t.Prioridade</span></td>
+                <td>@t.Prazo.ToString("dd/MM/yyyy")</td>
+                <td>@(t.Finalizada ? "Finalizada" : "Aberta")</td>
+                <td>
+                    <a asp-action="Editar" asp-route-id="@t.Id"
+                       class="btn btn-sm btn-warning">Editar</a>
+
+                    @if (!t.Finalizada)
+                    {
+                        <form asp-action="Finalizar" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@t.Id" />
+                            <button class="btn btn-sm btn-success">✔</button>
+                        </form>
+                    }
+
+                    <a asp-action="Excluir" asp-route-id="@t.Id"
+                       class="btn btn-sm btn-danger">Excluir</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

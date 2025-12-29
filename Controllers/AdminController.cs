@@ -84,6 +84,29 @@ public class AdminController : Controller
     // ✅ GET — dashboard
     public async Task<IActionResult> Dashboard()
     {
+        var hoje = DateTime.UtcNow;
+        var ultimos7 = hoje.AddDays(-7);
+        var anteriores7 = hoje.AddDays(-14);
+
+        // ===============================
+        // BUSCA PROJETOS (SEM FILTRO)
+        // ===============================
+        var projetos = await _context.Projetos
+            .Include(p => p.Tarefas)
+            .Include(p => p.Membros)
+            .Select(p => new ProjetoResumoViewModel
+            {
+                Id = p.Id,
+                Titulo = p.Titulo,
+                TotalTarefas = p.Tarefas.Count,
+                TarefasConcluidas = p.Tarefas.Count(t => t.Finalizada),
+                Membros = p.Membros.Select(m => m.UserName!).ToList()
+            })
+            .ToListAsync(); // 👈 materializa aqui
+
+        // ===============================
+        // VIEWMODEL
+        // ===============================
         var vm = new AdminDashboardViewModel
         {
             TotalUsuarios = await _userManager.Users.CountAsync(),
@@ -91,13 +114,82 @@ public class AdminController : Controller
             NoticiasPublicadas = await _context.Noticias.CountAsync(n => n.Publicada),
             NoticiasRascunho = await _context.Noticias.CountAsync(n => !n.Publicada),
 
+            NoticiasUltimos7Dias = await _context.Noticias
+                .CountAsync(n => n.DataPublicacao >= ultimos7),
+
+            Noticias7DiasAnteriores = await _context.Noticias
+                .CountAsync(n =>
+                    n.DataPublicacao >= anteriores7 &&
+                    n.DataPublicacao < ultimos7),
+
             UltimasNoticias = await _context.Noticias
                 .Include(n => n.Autor)
                 .OrderByDescending(n => n.DataPublicacao)
                 .Take(5)
-                .ToListAsync()
+                .ToListAsync(),
+
+            TarefasRecentes = await _context.Tarefas
+                .OrderBy(t => t.Finalizada)
+                .ThenBy(t => t.Prazo)
+                .Take(5)
+                .ToListAsync(),
+
+            // 👇 FILTRO AGORA É EM MEMÓRIA
+            ProjetosEmAndamento = projetos
+                .Where(p => p.Progresso < 100)
+                //.Take(6)
+                .ToList()
         };
 
         return View(vm);
     }
+
+
+
+
+    // =========================
+    // RESETAR SENHA (ADMIN)
+    // =========================
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> ResetarSenha(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+            return NotFound();
+
+        var user = await _userManager.FindByIdAsync(id);
+        if (user == null)
+            return NotFound();
+
+        return View(user);
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Admin")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResetarSenha(string id, string novaSenha)
+    {
+        if (string.IsNullOrWhiteSpace(novaSenha))
+        {
+            ModelState.AddModelError("", "Informe a nova senha");
+            return View();
+        }
+
+        var user = await _userManager.FindByIdAsync(id);
+        if (user == null)
+            return NotFound();
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var result = await _userManager.ResetPasswordAsync(user, token, novaSenha);
+
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+                ModelState.AddModelError("", error.Description);
+
+            return View(user);
+        }
+
+        return RedirectToAction(nameof(Usuarios));
+    }
+
 }

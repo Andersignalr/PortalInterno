@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace PortalInterno.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251229135323_CriarTarefas")]
+    partial class CriarTarefas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -63,9 +66,6 @@ namespace PortalInterno.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("ProjetoId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
@@ -84,8 +84,6 @@ namespace PortalInterno.Migrations
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
-
-                    b.HasIndex("ProjetoId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -255,26 +253,6 @@ namespace PortalInterno.Migrations
                     b.ToTable("Noticias");
                 });
 
-            modelBuilder.Entity("Projeto", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CriadoEm")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Titulo")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Projetos");
-                });
-
             modelBuilder.Entity("Tarefa", b =>
                 {
                     b.Property<int>("Id")
@@ -298,25 +276,13 @@ namespace PortalInterno.Migrations
                     b.Property<int>("Prioridade")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ProjetoId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjetoId");
-
                     b.ToTable("Tarefas");
-                });
-
-            modelBuilder.Entity("ApplicationUser", b =>
-                {
-                    b.HasOne("Projeto", null)
-                        .WithMany("Membros")
-                        .HasForeignKey("ProjetoId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -379,22 +345,6 @@ namespace PortalInterno.Migrations
                         .IsRequired();
 
                     b.Navigation("Autor");
-                });
-
-            modelBuilder.Entity("Tarefa", b =>
-                {
-                    b.HasOne("Projeto", "Projeto")
-                        .WithMany("Tarefas")
-                        .HasForeignKey("ProjetoId");
-
-                    b.Navigation("Projeto");
-                });
-
-            modelBuilder.Entity("Projeto", b =>
-                {
-                    b.Navigation("Membros");
-
-                    b.Navigation("Tarefas");
                 });
 #pragma warning restore 612, 618
         }

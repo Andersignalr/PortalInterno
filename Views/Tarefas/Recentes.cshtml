@@ -1,0 +1,30 @@
+﻿@model IEnumerable<Tarefa>
+
+<h4>Tarefas recentes</h4>
+
+<ul class="list-group">
+    @foreach (var t in Model)
+    {
+        string badge = t.Prioridade switch
+        {
+            PrioridadeTarefa.Alta => "bg-danger",
+            PrioridadeTarefa.Media => "bg-primary",
+            _ => "bg-secondary"
+        };
+
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <strong>@t.Titulo</strong>
+                <div class="small text-muted">
+                    Prazo: @t.Prazo.ToString("dd/MM/yyyy")
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center">
+                <span class="badge @badge me-2">
+                    @t.Prioridade
+                </span>
+            </div>
+        </li>
+    }
+</ul>
