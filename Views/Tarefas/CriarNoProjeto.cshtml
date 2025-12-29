@@ -1,0 +1,39 @@
+﻿@model Tarefa
+
+<h4>Nova tarefa</h4>
+
+<form asp-action="CriarNoProjeto" method="post">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="ProjetoId" />
+
+    <div class="mb-3">
+        <label asp-for="Titulo"></label>
+        <input asp-for="Titulo" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Descricao"></label>
+        <textarea asp-for="Descricao" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Prioridade"></label>
+        <select asp-for="Prioridade"
+                asp-items="Html.GetEnumSelectList<PrioridadeTarefa>()"
+                class="form-select"></select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Prazo"></label>
+        <input asp-for="Prazo" type="date" class="form-control" />
+    </div>
+
+    <button class="btn btn-success">Criar</button>
+    <a asp-controller="Projetos"
+       asp-action="Detalhes"
+       asp-route-id="@Model.ProjetoId"
+       class="btn btn-secondary">
+        Cancelar
+    </a>
+</form>

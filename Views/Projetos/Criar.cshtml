@@ -1,0 +1,15 @@
+﻿@model Projeto
+
+<h2>Novo Projeto</h2>
+
+<form method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label asp-for="Titulo"></label>
+        <input asp-for="Titulo" class="form-control" />
+    </div>
+
+    <button class="btn btn-success">Criar projeto</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

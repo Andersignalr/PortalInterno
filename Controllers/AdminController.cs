@@ -100,7 +100,7 @@ public class AdminController : Controller
                 Titulo = p.Titulo,
                 TotalTarefas = p.Tarefas.Count,
                 TarefasConcluidas = p.Tarefas.Count(t => t.Finalizada),
-                Membros = p.Membros.Select(m => m.UserName!).ToList()
+                Membros = p.Membros.Select(m => m.Usuario.UserName!).ToList()
             })
             .ToListAsync(); // 👈 materializa aqui
 
