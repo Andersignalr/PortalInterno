@@ -2,7 +2,8 @@
 
 <h2>Notícias</h2>
 
-@if (User.IsInRole("Admin") || User.IsInRole("Editor"))
+@* BOTÃO CRIAR *@
+@if (User.IsInRole("Admin") || User.IsInRole("Editor") || User.IsInRole("Autor"))
 {
     <a asp-action="Criar" class="btn btn-success mb-3">
         Nova Notícia
@@ -14,8 +15,10 @@
     <div class="card mb-3">
         <div class="card-body">
             <h4>@item.Titulo</h4>
+
             <p class="text-muted">
-                @item.DataPublicacao.ToLocalTime() • @item.Autor?.UserName
+                @item.DataPublicacao.ToLocalTime()
+                • @item.Autor?.UserName
             </p>
 
             <p>
@@ -24,19 +27,30 @@
                             : item.Conteudo)
             </p>
 
+            <a asp-action="Detalhes" asp-route-id="@item.Id">
+                Ler mais
+            </a>
 
-            <a asp-action="Detalhes" asp-route-id="@item.Id">Ler mais</a>
-
-            @if (User.IsInRole("Admin") || User.IsInRole("Editor"))
+            @* EDITAR *@
+            @if (
+                    User.IsInRole("Admin") ||
+                    User.IsInRole("Editor") ||
+                    (User.IsInRole("Autor") && item.AutorId == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value)
+                    )
             {
-                <a asp-action="Editar" asp-route-id="@item.Id" class="btn btn-sm btn-warning ms-2">
+                <a asp-action="Editar"
+                   asp-route-id="@item.Id"
+                   class="btn btn-sm btn-warning ms-2">
                     Editar
                 </a>
             }
 
+            @* EXCLUIR *@
             @if (User.IsInRole("Admin"))
             {
-                <a asp-action="Excluir" asp-route-id="@item.Id" class="btn btn-sm btn-danger ms-2">
+                <a asp-action="Excluir"
+                   asp-route-id="@item.Id"
+                   class="btn btn-sm btn-danger ms-2">
                     Excluir
                 </a>
             }

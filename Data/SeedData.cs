@@ -6,7 +6,8 @@ public static class SeedData
     {
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-        string[] roles = { "Admin", "Editor", "Leitor" };
+        string[] roles = { "Admin", "Editor", "Autor", "Leitor" };
+
 
         foreach (var role in roles)
         {

@@ -21,11 +21,22 @@ public class AdminController : Controller
     }
 
     // ✅ GET — lista de usuários
-    public IActionResult Usuarios()
+    public async Task<IActionResult> Usuarios()
     {
         var usuarios = _userManager.Users.ToList();
+
+        var userRoles = new Dictionary<string, IList<string>>();
+
+        foreach (var user in usuarios)
+        {
+            userRoles[user.Id] = await _userManager.GetRolesAsync(user);
+        }
+
+        ViewBag.UserRoles = userRoles;
+
         return View(usuarios);
     }
+
 
     // ✅ GET — tela de edição de cargos
     public async Task<IActionResult> EditarCargos(string id)

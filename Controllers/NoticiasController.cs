@@ -16,7 +16,9 @@ public class NoticiasController : Controller
         _userManager = userManager;
     }
 
-    // LISTAGEM (Feed)
+    // =========================
+    // FEED PÚBLICO
+    // =========================
     public async Task<IActionResult> Index()
     {
         var noticias = await _context.Noticias
@@ -28,42 +30,49 @@ public class NoticiasController : Controller
         return View(noticias);
     }
 
-
+    // =========================
     // DETALHES
+    // =========================
     public async Task<IActionResult> Detalhes(int id)
     {
         var noticia = await _context.Noticias
             .Include(n => n.Autor)
             .FirstOrDefaultAsync(n => n.Id == id);
 
-        if (noticia == null) return NotFound();
+        if (noticia == null)
+            return NotFound();
 
         return View(noticia);
     }
 
-    // CREATE
-    [Authorize(Roles = "Admin,Editor")]
+    // =========================
+    // CRIAR
+    // =========================
+    [Authorize(Roles = "Admin,Editor,Autor")]
     public IActionResult Criar()
     {
-        var noticia = new Noticia
-        {
-            DataPublicacao = DateTime.UtcNow
-        };
-
-        return View(noticia);
+        return View(new Noticia());
     }
 
-
     [HttpPost]
-    [Authorize(Roles = "Admin,Editor")]
+    [Authorize(Roles = "Admin,Editor,Autor")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Criar(Noticia noticia)
     {
         if (!ModelState.IsValid)
             return View(noticia);
 
-        noticia.AutorId = _userManager.GetUserId(User)!;
+        var userId = _userManager.GetUserId(User)!;
+
+        noticia.AutorId = userId;
         noticia.DataPublicacao = DateTime.UtcNow;
+
+        // 🔒 REGRA DE NEGÓCIO
+        if (!User.IsInRole("Admin") && !User.IsInRole("Editor"))
+        {
+            // Autor nunca publica direto
+            noticia.Publicada = false;
+        }
 
         _context.Noticias.Add(noticia);
         await _context.SaveChangesAsync();
@@ -71,19 +80,21 @@ public class NoticiasController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-
-
-    // EDIT
+    // =========================
+    // EDITAR
+    // =========================
     [Authorize(Roles = "Admin,Editor")]
     public async Task<IActionResult> Editar(int id)
     {
         var noticia = await _context.Noticias.FindAsync(id);
-        if (noticia == null) return NotFound();
+        if (noticia == null)
+            return NotFound();
 
         return View(noticia);
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,Editor")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Editar(int id, Noticia model)
     {
@@ -94,25 +105,25 @@ public class NoticiasController : Controller
         if (noticiaDb == null)
             return NotFound();
 
-        // Atualiza apenas os campos editáveis
         noticiaDb.Titulo = model.Titulo;
         noticiaDb.Conteudo = model.Conteudo;
-        noticiaDb.Publicada = model.Publicada;
 
-        // NÃO mexe no AutorId
-        // noticiaDb.AutorId permanece intacto
+        // Só Admin/Editor podem alterar publicação
+        noticiaDb.Publicada = model.Publicada;
 
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
-
-    // DELETE
+    // =========================
+    // EXCLUIR
+    // =========================
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Excluir(int id)
     {
         var noticia = await _context.Noticias.FindAsync(id);
-        if (noticia == null) return NotFound();
+        if (noticia == null)
+            return NotFound();
 
         return View(noticia);
     }
@@ -123,20 +134,25 @@ public class NoticiasController : Controller
     public async Task<IActionResult> ExcluirConfirmado(int id)
     {
         var noticia = await _context.Noticias.FindAsync(id);
+        if (noticia == null)
+            return NotFound();
 
-        _context.Noticias.Remove(noticia!);
+        _context.Noticias.Remove(noticia);
         await _context.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
     }
 
+    // =========================
+    // GERENCIAR
+    // =========================
     [Authorize(Roles = "Admin,Editor")]
     public async Task<IActionResult> Gerenciar()
     {
         IQueryable<Noticia> query = _context.Noticias
             .Include(n => n.Autor);
 
-        // Editor vê só as próprias
+        // Editor vê apenas as próprias
         if (User.IsInRole("Editor") && !User.IsInRole("Admin"))
         {
             var userId = _userManager.GetUserId(User);
@@ -149,5 +165,4 @@ public class NoticiasController : Controller
 
         return View(noticias);
     }
-
 }
