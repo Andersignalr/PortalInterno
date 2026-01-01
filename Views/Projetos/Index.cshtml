@@ -1,0 +1,43 @@
+﻿@model IEnumerable<Projeto>
+
+@{
+    ViewData["Title"] = "Meus Projetos";
+}
+
+<h2 class="mb-3">📁 Meus Projetos</h2>
+
+<a asp-action="Criar" class="btn btn-primary mb-4">
+    ➕ Novo Projeto
+</a>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        Você ainda não participa de nenhum projeto.
+    </div>
+}
+else
+{
+    <div class="row">
+        @foreach (var projeto in Model)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">@projeto.Titulo</h5>
+                        <p class="text-muted">
+                            Criado em @projeto.CriadoEm.ToLocalTime().ToString("dd/MM/yyyy")
+                        </p>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <a asp-action="Detalhes"
+                           asp-route-id="@projeto.Id"
+                           class="btn btn-sm btn-outline-primary">
+                            Abrir
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

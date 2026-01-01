@@ -1,0 +1,122 @@
+﻿@model Projeto
+@using static PapelProjeto
+
+@{
+    ViewData["Title"] = Model.Titulo;
+    var meuPapel = (PapelProjeto)ViewBag.MeuPapel;
+}
+
+<h2 class="mb-3">📌 @Model.Titulo</h2>
+
+<span class="badge bg-secondary mb-4">
+    Meu papel: @meuPapel
+</span>
+
+<div class="row">
+    <!-- ===================== -->
+    <!-- COLUNA ESQUERDA -->
+    <!-- ===================== -->
+    <div class="col-md-8">
+
+        <!-- COMENTÁRIOS -->
+        <div class="card mb-4">
+            <div class="card-header">
+                💬 Comentários
+            </div>
+            <div class="card-body">
+
+                @foreach (var comentario in Model.Comentarios.OrderByDescending(c => c.CriadoEm))
+                {
+                    <div class="mb-3 border-bottom pb-2">
+                        <strong>@comentario.Usuario.UserName</strong>
+                        <small class="text-muted">
+                            @comentario.CriadoEm.ToLocalTime().ToString("dd/MM HH:mm")
+                        </small>
+                        <div>@comentario.Texto</div>
+                    </div>
+                }
+
+                @if (meuPapel >= Membro)
+                {
+                    <form asp-action="Comentar" method="post">
+                        <input type="hidden" name="projetoId" value="@Model.Id" />
+                        <div class="mb-2">
+                            <textarea name="texto" class="form-control"
+                                  rows="2"
+                                  placeholder="Escreva um comentário..."></textarea>
+                        </div>
+                        <button class="btn btn-primary btn-sm">Comentar</button>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== -->
+    <!-- COLUNA DIREITA -->
+    <!-- ===================== -->
+    <div class="col-md-4">
+
+        <!-- MEMBROS -->
+        <div class="card mb-4">
+            <div class="card-header">
+                👥 Membros
+            </div>
+            <div class="card-body">
+                @foreach (var membro in Model.Membros)
+                {
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>
+                            @membro.Usuario.UserName
+                            <small class="text-muted">(@membro.Papel)</small>
+                        </span>
+
+                        @if (meuPapel == Gestor && membro.UsuarioId != membro.Projeto.Membros
+                                            .First(m => m.Papel == Gestor).UsuarioId)
+                        {
+                            <form asp-action="RemoverMembro" method="post">
+                                <input type="hidden" name="projetoId" value="@Model.Id" />
+                                <input type="hidden" name="usuarioId" value="@membro.UsuarioId" />
+                                <button class="btn btn-sm btn-outline-danger">✖</button>
+                            </form>
+                        }
+                    </div>
+                }
+
+                @if (meuPapel == Gestor)
+                {
+                    <hr />
+                    <form asp-action="AdicionarMembro" method="post">
+                        <input type="hidden" name="projetoId" value="@Model.Id" />
+                        <div class="input-group">
+                            <input type="email"
+                                   name="email"
+                                   class="form-control"
+                                   placeholder="Email do usuário" />
+                            <button class="btn btn-success">Adicionar</button>
+                        </div>
+                    </form>
+                }
+            </div>
+        </div>
+
+        <!-- TIMELINE -->
+        <div class="card">
+            <div class="card-header">
+                🕒 Timeline
+            </div>
+            <ul class="list-group list-group-flush">
+                @foreach (var evento in Model.Timeline
+                                .OrderByDescending(t => t.CriadoEm))
+                {
+                    <li class="list-group-item">
+                        <small class="text-muted">
+                            @evento.CriadoEm.ToLocalTime().ToString("dd/MM HH:mm")
+                        </small><br />
+                        @evento.Evento
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>

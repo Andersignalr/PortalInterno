@@ -1,15 +1,27 @@
 ﻿@model Projeto
 
-<h2>Novo Projeto</h2>
+@{
+    ViewData["Title"] = "Novo Projeto";
+}
 
-<form method="post">
-    @Html.AntiForgeryToken()
+<h2>➕ Novo Projeto</h2>
 
+<form asp-action="Criar" method="post" class="mt-4">
     <div class="mb-3">
-        <label asp-for="Titulo"></label>
+        <label asp-for="Titulo" class="form-label"></label>
         <input asp-for="Titulo" class="form-control" />
+        <span asp-validation-for="Titulo" class="text-danger"></span>
     </div>
 
-    <button class="btn btn-success">Criar projeto</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    <button type="submit" class="btn btn-success">
+        Criar Projeto
+    </button>
+
+    <a asp-action="Index" class="btn btn-secondary ms-2">
+        Cancelar
+    </a>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

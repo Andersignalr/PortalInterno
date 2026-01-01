@@ -1,0 +1,177 @@
+﻿@model Projeto
+@using static PapelProjeto
+
+@{
+    ViewData["Title"] = Model.Titulo;
+    var meuPapel = (PapelProjeto)ViewBag.MeuPapel;
+}
+
+<h2 class="mb-3">📌 @Model.Titulo</h2>
+
+<span class="badge bg-secondary mb-4">
+    Meu papel: @meuPapel
+</span>
+
+<div class="row">
+    <!-- ===================== -->
+    <!-- COLUNA ESQUERDA -->
+    <!-- ===================== -->
+    <div class="col-md-8">
+
+        <!-- COMENTÁRIOS -->
+        <div class="card mb-4">
+            <div class="card-header">
+                💬 Comentários
+            </div>
+            <div class="card-body">
+
+                @foreach (var comentario in Model.Comentarios.OrderByDescending(c => c.CriadoEm))
+                {
+                    <div class="mb-3 border-bottom pb-2">
+                        <strong>@comentario.Usuario.UserName</strong>
+                        <small class="text-muted">
+                            @comentario.CriadoEm.ToLocalTime().ToString("dd/MM HH:mm")
+                        </small>
+                        <div>@comentario.Texto</div>
+                    </div>
+                }
+
+                @if (meuPapel >= Membro)
+                {
+                    <form asp-action="Comentar" method="post">
+                        <input type="hidden" name="projetoId" value="@Model.Id" />
+                        <div class="mb-2">
+                            <textarea name="texto" class="form-control"
+                                      rows="2"
+                                      placeholder="Escreva um comentário..."></textarea>
+                        </div>
+                        <button class="btn btn-primary btn-sm">Comentar</button>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== -->
+    <!-- COLUNA DIREITA -->
+    <!-- ===================== -->
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                👥 Membros do Projeto
+            </div>
+            <div class="card-body">
+
+                @foreach (var membro in Model.Membros)
+                {
+                    <div class="border-bottom pb-2 mb-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <strong>@membro.Usuario.UserName</strong>
+
+                            <span class="badge bg-secondary">
+                                @membro.Papel
+                            </span>
+                        </div>
+
+                        @* ===================== *@
+                        @* ALTERAR PAPEL *@
+                        @* ===================== *@
+                        @if (meuPapel == Gestor && membro.Papel != Gestor)
+                        {
+                            <form asp-action="AlterarPapel"
+                                  method="post"
+                                  class="mt-2 d-flex gap-2 align-items-center">
+
+                                @Html.AntiForgeryToken()
+
+                                <input type="hidden" name="projetoId" value="@Model.Id" />
+                                <input type="hidden" name="usuarioId" value="@membro.UsuarioId" />
+
+                                <select name="papel"
+                                        class="form-select form-select-sm w-auto">
+                                    @foreach (PapelProjeto papel in Enum.GetValues(typeof(PapelProjeto)))
+                                    {
+                                        <option value="@papel"
+                                                selected="@(papel == membro.Papel)">
+                                            @papel
+                                        </option>
+                                    }
+                                </select>
+
+                                <button class="btn btn-sm btn-outline-primary">
+                                    Salvar
+                                </button>
+                            </form>
+                        }
+
+                        @* ===================== *@
+                        @* REMOVER MEMBRO *@
+                        @* ===================== *@
+                        @if (meuPapel == Gestor && membro.Papel != Gestor)
+                        {
+                            <form asp-action="RemoverMembro"
+                                  method="post"
+                                  class="mt-1">
+
+                                @Html.AntiForgeryToken()
+
+                                <input type="hidden" name="projetoId" value="@Model.Id" />
+                                <input type="hidden" name="usuarioId" value="@membro.UsuarioId" />
+
+                                <button class="btn btn-sm btn-outline-danger">
+                                    Remover
+                                </button>
+                            </form>
+                        }
+                    </div>
+                }
+
+                @* ===================== *@
+                @* ADICIONAR MEMBRO *@
+                @* ===================== *@
+                @if (meuPapel == Gestor)
+                {
+                    <hr />
+
+                    <form asp-action="AdicionarMembro" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden" name="projetoId" value="@Model.Id" />
+
+                        <div class="input-group">
+                            <input type="email"
+                                   name="email"
+                                   class="form-control"
+                                   placeholder="Email do usuário"
+                                   required />
+
+                            <button class="btn btn-success">
+                                Adicionar
+                            </button>
+                        </div>
+                    </form>
+                }
+            </div>
+        </div>
+
+        <!-- TIMELINE -->
+        <div class="card">
+            <div class="card-header">
+                🕒 Timeline
+            </div>
+            <ul class="list-group list-group-flush">
+                @foreach (var evento in Model.Timeline
+                                .OrderByDescending(t => t.CriadoEm))
+                {
+                    <li class="list-group-item">
+                        <small class="text-muted">
+                            @evento.CriadoEm.ToLocalTime().ToString("dd/MM HH:mm")
+                        </small><br />
+                        @evento.Evento
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+</div>
