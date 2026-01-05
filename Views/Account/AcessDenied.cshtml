@@ -1,0 +1,19 @@
+﻿@{
+    ViewData["Title"] = "Acesso negado";
+}
+
+<div class="container d-flex justify-content-center align-items-center" style="height:70vh;">
+    <div class="text-center">
+        <h1 class="text-danger mb-3">🚫 Acesso negado</h1>
+
+        <p class="lead">
+            Você não tem acesso a esta página.
+        </p>
+
+        <a asp-controller="Account"
+           asp-action="Login"
+           class="btn btn-primary mt-3">
+            Fazer login
+        </a>
+    </div>
+</div>
